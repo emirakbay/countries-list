@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
 import { Input, Table, Typography } from "antd";
 import { GET_COUNTRIES, client } from "./queries";
-import { get } from "http";
 
 const { Search } = Input;
 
@@ -11,11 +10,16 @@ interface Country {
   key: any;
   code: string;
   name: string;
+  phone: string;
+  native: string;
+  emoji: string;
+  currency: string;
+  languages: {
+    name: string;
+  }[];
   continent: {
     name: string;
   };
-  population: number;
-  size?: string;
 }
 
 interface Data {
@@ -37,14 +41,6 @@ export default function Home() {
   const [previouslySelectedGroupField, setPreviouslySelectedGroupField] =
     useState<Country | null>(null);
 
-  const [filteredCountries, setFilteredCountries] = useState<Country[] | null>(
-    null
-  );
-
-  const [selectedItemIndex, setSelectedItemIndex] = useState<number | null>(
-    null
-  );
-
   useEffect(() => {
     if (!loading && data?.countries) {
       let searchFilter = "";
@@ -64,7 +60,7 @@ export default function Home() {
 
       // Filter by search term
       if (searchFilter) {
-        const filteredCountries = countries.filter((country) =>
+        let filteredCountries = countries.filter((country) =>
           country.name.toLowerCase().includes(searchFilter.toLowerCase())
         );
         if (groupByField) {
@@ -171,7 +167,6 @@ export default function Home() {
                 setPreviouslySelectedGroupField(null);
               } else {
                 e.preventDefault();
-                console.log(record);
                 setSelectedGroupField(record[groupByField]);
                 setPreviouslySelectedGroupField(selectedGroupField);
               }
